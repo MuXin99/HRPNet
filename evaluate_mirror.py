@@ -39,18 +39,13 @@ def evaluate(logdir, save_predict=False, options=['test'], prefix=''):
         loaders.append((opt, DataLoader(dataset, batch_size=1, shuffle=False, num_workers=cfg['num_workers'])))
 
     model = get_model(cfg).to(device)
-    # path = 'toolbox/models/Worker4/weight/8561.pth'
-    #model.load_state_dict(torch.load(os.path.join(logdir, prefix + '198model.pth'), map_location={'cuda:1': 'cuda:0'}))
-    # model.load_state_dict(torch.load(path, map_location={'cuda:1': 'cuda:0'}))
-    # save_ckpt('/home/dtrimina/Desktop/lxy/Segmentation_final/run', model)
-
-    model.load_state_dict(torch.load(os.path.join(logdir, prefix + '242model.pth'), map_location={'cuda:0': 'cuda:0'}))
+    model.load_state_dict(torch.load(os.path.join(logdir, prefix + 'xxxmodel.pth'), map_location={'cuda:0': 'cuda:0'}))
     # model = load_ckpt(logdir, model, prefix=prefix)
 
     running_metrics_val = runMsg()
     # time_meter = averageMeter()
 
-    save_path = os.path.join(logdir, '242predicts/')
+    save_path = os.path.join(logdir, 'xxxpredicts/')
     if not os.path.exists(save_path) and save_predict:
         os.mkdir(save_path)
 
