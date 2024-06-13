@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 import torch.nn.functional as F
-from Mirror_ss.backbone.DFormer.DFormer import DFormer_Tiny
-from Mirror_ss.Work1.norm import DFFM, BasicConv2d, Up
+from DFormer import DFormer_Tiny
+from norm import DFFM, BasicConv2d, Up
 
 class FM(nn.Module):
     def __init__(self, inc):
@@ -20,7 +20,7 @@ class FM(nn.Module):
         s = self.fun(r, d)
         s = self.con3(s)
         return s
-####################################################################################
+
 class AA(nn.Module):
     def __init__(self, inc=64):
         super(AA, self).__init__()
@@ -106,7 +106,6 @@ class AA(nn.Module):
         T1 = self.up4(smap)
         return T1, T2, T3, T4, f1, f2, f3, f4, F3, F2, F1
 
-#################################################################################################################
 class Dfo_S(nn.Module):
     def __init__(self):
         super().__init__()
@@ -114,7 +113,6 @@ class Dfo_S(nn.Module):
         self.decoder = AA(64)
         self.fuse_canny_edge = nn.Conv2d(2, 1, kernel_size=1, padding=0, bias=False)
 
-        # ------------------------  rgb prediction module  ---------------------------- #
         self.conv1_1 = nn.Conv2d(256, 128, kernel_size=(3, 3), padding=(1, 1))
         self.conv1_3 = nn.Conv2d(128, 64, kernel_size=(3, 3), padding=(1, 1))
         self.conv1_5 = nn.Conv2d(64, 32, kernel_size=(3, 3), padding=(1, 1))
@@ -122,7 +120,6 @@ class Dfo_S(nn.Module):
         self.conv1_9 = nn.Conv2d(16, 16, kernel_size=(3, 3), padding=(1, 1))
         self.conv1_11 = nn.Conv2d(16, 1, kernel_size=(3, 3), padding=(1, 1))
 
-        # ------------------------  t prediction module  ---------------------------- #
         self.conv2_1 = nn.Conv2d(256, 128, kernel_size=(3, 3), padding=(1, 1))
         self.conv2_3 = nn.Conv2d(128, 64, kernel_size=(3, 3), padding=(1, 1))
         self.conv2_5 = nn.Conv2d(64, 32, kernel_size=(3, 3), padding=(1, 1))
@@ -137,24 +134,3 @@ class Dfo_S(nn.Module):
         out = self.dformer(input_rgb, input_depth)
         T1, T2, T3, T4, f1, f2, f3, f4, F3, F2, F1 = self.decoder(input_rgb, out)
         return self.sig(T1),  self.sig(T2),  self.sig(T3),  self.sig(T4) #,f1, f2, f3, f4, F3, F2, F1
-
-
-if __name__ == '__main__':
-    img = torch.randn(1, 3, 416, 416)
-    depth = torch.randn(1, 3, 416, 416)
-
-    model = Dfo_S()
-# 10.67G   13.64M
-    out = model(img,depth)
-    for i in range(len(out)):
-        print(out[i].shape)
-
-    # # from toolbox import compute_speed
-    # from ptflops import get_model_complexity_info
-    # with torch.cuda.device(0):
-    #     net = Dfo_S()
-    #     flops, params = get_model_complexity_info(net, (3, 416, 416), as_strings=True, print_per_layer_stat=False)
-    #     print('Flops: ' + flops)
-    #     print('Params: ' + params)
-
-    # compute_speed(net, input_size=(1, 3, 416, 416), iteration=500)
