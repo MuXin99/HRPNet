@@ -25,18 +25,18 @@ class MCCM(nn.Module):
         x1 = self.c31(x1)
         x2 = self.c31_2(x)
         x2 = self.c13_2(x2)
-        fuse_max = torch.cat((x1, x2), dim=1)
-        fuse_max = self.fuseconv(fuse_max)
+        f = torch.cat((x1, x2), dim=1)
+        f = self.fuseconv(f)
 
-        aux_w = self.aux_conv(y)
-        weight = aux_w * fuse_max
-        x1 = weight + x1
-        x2 = weight + x2
+        au = self.aux_conv(y)
+        w = au * f
+        x1 = w + x1
+        x2 = w + x2
         param = torch.sigmoid(self.param)
         f = x1 * param + x2 * (1 - param)
-        ar_out = self.sof(self.bn1(f))
-        ar_out = ar_out * x
-        return ar_out
+        out = self.sof(self.bn1(f))
+        out = out * x
+        return out
 
 class fusion(nn.Module):
     def __init__(self, inc):
