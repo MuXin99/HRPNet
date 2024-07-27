@@ -131,7 +131,6 @@ class GBF(nn.Module):
         r = self.tu(r)
         d = self.tu(d)
         s = r + d
-        # 近似拉普拉斯
         s = self.con1(s) - self.con(s)
         d = apply_frequency_filter(d)
         r = s + r
